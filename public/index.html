@@ -55,22 +55,27 @@
             padding: 10px 20px;
         }
         .message {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             padding: 10px;
             border-radius: 10px;
+            max-width: 75%;
+            position: relative;
+        }
+        .message.sent {
             background-color: #007bff;
             color: white;
-            max-width: 75%;
+            align-self: flex-end;
         }
         .message.received {
             background-color: #e9ecef;
             color: #333;
             align-self: flex-start;
         }
-        .message.sent {
-            background-color: #007bff;
-            color: white;
-            align-self: flex-end;
+        .message-label {
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
         }
     </style>
 </head>
@@ -96,28 +101,43 @@
   const messageInput = document.getElementById("message");
   const messagesDiv = document.getElementById("messagesDiv");
 
-  // Receiving messages from the server
   socket.on("message", (message) => {
-      const p = document.createElement("p");
-      p.classList.add("message", "received");
-      p.innerText = message;
-      messagesDiv.appendChild(p);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+       const messageDiv = document.createElement("div");
+       messageDiv.classList.add("message", "received");
+       
+       const label = document.createElement("span");
+       label.classList.add("message-label");
+       label.innerText = "Receiver";
+       
+       const content = document.createElement("div");
+       content.innerText = message;
+       
+       messageDiv.appendChild(label);
+       messageDiv.appendChild(content);
+       messagesDiv.appendChild(messageDiv);
+       messagesDiv.scrollTop = messagesDiv.scrollHeight;
   });
 
   function sendMessage() {
       const message = messageInput.value.trim();
       if (message) {
           messageInput.value = "";
-
-          // Display the message directly as a sent message
-          const p = document.createElement("p");
-          p.classList.add("message", "sent");
-          p.innerText = message;
-          messagesDiv.appendChild(p);
+          
+          const messageDiv = document.createElement("div");
+          messageDiv.classList.add("message", "sent");
+          
+          const label = document.createElement("span");
+          label.classList.add("message-label");
+          label.innerText = "Sender";
+          
+          const content = document.createElement("div");
+          content.innerText = message;
+          
+          messageDiv.appendChild(label);
+          messageDiv.appendChild(content);
+          messagesDiv.appendChild(messageDiv);
           messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-          // Send the message to the server
+          
           socket.emit("user-message", message);
       }
   }
