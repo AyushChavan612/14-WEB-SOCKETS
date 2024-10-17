@@ -11,7 +11,11 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Handle WebSocket connections
 io.on('connection', (socket) => {
-    console.log('A user connected: ' + socket.id);
+     // It means if u get any data by name user-message do this action
+     socket.on("user-message" , (message) => {
+          // io.emit means sending the data to evryone
+          io.emit("message" , message);
+     });
 });
 
 app.get("/", (req, res) => {

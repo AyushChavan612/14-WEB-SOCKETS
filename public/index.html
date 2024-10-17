@@ -4,14 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Chat Application</title>
+    <style>
+      .messageDiv {
+         color: black;
+         height: 100px;
+         width: 100px;
+      }
+    </style>
 </head>
 <body>
     <h1>chatting</h1>
+     <input id="message" type="text" placeholder="Type a message here">
+     <button id="Send-Btn">Send</button>
+
+    <div id="messagesDiv" ></div>
 
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
   const socket = io();
+  const btn = document.getElementById("Send-Btn");
+  const messageInput = document.getElementById("message");
+  const messagesDiv = document.getElementById("messagesDiv");
+  
+  // If u get anything from backend name message do this action
+  socket.on("message" ,(message) => {
+       const p = document.createElement("p");
+       p.innerText = message;
+       messagesDiv.appendChild(p);
+  });
+
+
+
+  btn.addEventListener("click", (e) => {
+      const message = messageInput.value; // Get the updated value here
+      messageInput.value = ""; 
+      socket.emit("user-message" , message);
+  });
 </script>
+
 </body>
 </html>
