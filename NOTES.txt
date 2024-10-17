@@ -1,0 +1,3 @@
+1.what is polling : here the user always go to server and ask him whether is there something for him like and msg , data etc. But this process is not goof becuase when lots os user starts doing polling then there comes load on server. So the solution for it is web sockets
+
+-->So web socket is just like a normal http request send by user to server but what happens here this connection between user and server remains as it is untill user does not break it  , since in normal http request once work is done connection is break but in case of web socket the connection between user and serevr reamins so that server can also send anything the users connected to him
