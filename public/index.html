@@ -4,21 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Chat Application</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-      .messageDiv {
-         color: black;
-         height: 100px;
-         width: 100px;
-      }
+        body, html {
+            height: 100%;
+            background-color: #f8f9fa;
+        }
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #ffffff;
+        }
+        .chat-header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #e9ecef;
+        }
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .chat-input input {
+            flex: 1;
+            border: none;
+            padding: 10px;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+        .chat-input button {
+            border: none;
+            border-radius: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #007bff;
+            color: white;
+            max-width: 75%;
+        }
+        .message.received {
+            background-color: #e9ecef;
+            color: #333;
+            align-self: flex-start;
+        }
+        .message.sent {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+        }
     </style>
 </head>
 <body>
-    <h1>chatting</h1>
-     <input id="message" type="text" placeholder="Type a message here">
-     <button id="Send-Btn">Send</button>
 
-    <div id="messagesDiv" ></div>
-
+<div class="chat-container">
+    <div class="chat-header">
+        <h4>Chat Application</h4>
+    </div>
+    <div id="messagesDiv" class="chat-messages d-flex flex-column">
+        <!-- Messages will be dynamically added here -->
+    </div>
+    <div class="chat-input">
+        <input id="message" type="text" class="form-control" placeholder="Type a message">
+        <button id="Send-Btn" class="btn btn-primary">Send</button>
+    </div>
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -26,22 +95,49 @@
   const btn = document.getElementById("Send-Btn");
   const messageInput = document.getElementById("message");
   const messagesDiv = document.getElementById("messagesDiv");
-  
-  // If u get anything from backend name message do this action
-  socket.on("message" ,(message) => {
-       const p = document.createElement("p");
-       p.innerText = message;
-       messagesDiv.appendChild(p);
+
+  // Receiving messages from the server
+  socket.on("message", (message) => {
+      const p = document.createElement("p");
+      p.classList.add("message", "received");
+      p.innerText = message;
+      messagesDiv.appendChild(p);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
   });
 
+  function sendMessage() {
+      const message = messageInput.value.trim();
+      if (message) {
+          messageInput.value = "";
 
+          // Display the message directly as a sent message
+          const p = document.createElement("p");
+          p.classList.add("message", "sent");
+          p.innerText = message;
+          messagesDiv.appendChild(p);
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-  btn.addEventListener("click", (e) => {
-      const message = messageInput.value; // Get the updated value here
-      messageInput.value = ""; 
-      socket.emit("user-message" , message);
+          // Send the message to the server
+          socket.emit("user-message", message);
+      }
+  }
+
+  // Send message on button click
+  btn.addEventListener("click", sendMessage);
+
+  // Send message on Enter key press
+  messageInput.addEventListener("keypress", (event) => {
+      if (event.key === "Enter") {
+          event.preventDefault();
+          sendMessage();
+      }
   });
 </script>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </body>
 </html>
