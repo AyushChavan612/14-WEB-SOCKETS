@@ -4,15 +4,15 @@ const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
 
+const server = http.createServer(app); // Move this line before using 'server'
 const io = new Server(server);
 
-const server = http.createServer(app);
 app.use(express.static(path.join(__dirname, "public")));
 
-// socket is here a client , a socket is client we everyone  , it contains the information about that person
+// Handle WebSocket connections
 io.on('connection', (socket) => {
-    console.log('a user connected :' + socket.id);
-  });
+    console.log('A user connected: ' + socket.id);
+});
 
 app.get("/", (req, res) => {
      return res.sendFile(path.join(__dirname, "public", "index.html"));
